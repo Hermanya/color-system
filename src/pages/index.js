@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Flex, Box, Text} from 'rebass';
+import {Flex, Box, Text, Link} from 'rebass';
 import styled, {ThemeProvider, css, createGlobalStyle} from 'styled-components';
 import useMedia from 'use-media';
 import {WarningIndicator} from '../components/WarningIndicator';
@@ -225,6 +225,24 @@ const App = () => {
               })}
             </Text>
           </Flex>
+        </Box>
+        <Box>
+          <Text as="h2" fontSize={2} mb={4}>
+            Links
+          </Text>
+          <Link
+            mr={2}
+            href="https://codesandbox.io/s/github/Hermanya/color-system/tree/master/example"
+          >
+            CodeSandbox
+          </Link>
+          <Link mr={2} href="https://www.npmjs.com/package/use-color-system">
+            NPM
+          </Link>
+          <Link mr={2} href="https://github.com/Hermanya/color-system">
+            GitHub
+          </Link>
+          <Link href="https://hermanya.github.io">Herman Starikov</Link>
         </Box>
       </Root>
     </ThemeProvider>
