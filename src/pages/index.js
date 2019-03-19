@@ -9,6 +9,7 @@ import {LikeIndicator} from '../components/LikeIndicator';
 import {StatusIndicator} from '../components/StatusIndicator';
 import Seo from '../defaultcomponents/seo';
 import {useColorSystem} from '../hooks/useColorSystem';
+import useMedia from 'use-media';
 
 const ColorScale = ({colors, title, ...props}) => (
   <Flex {...props} title={title} justifyContent="flex-end" alignItems="center">
@@ -42,13 +43,21 @@ const ColorPrism = ({colors, ...props}) => (
 );
 
 const Checkbox = ({label, checked, onChange, ...props}) => (
-  <Flex as="label" alignItems="center" mb={3} {...props}>
+  <Flex as="label" alignItems="center" mb={2} {...props}>
     <input type="checkbox" checked={checked} onChange={onChange} />
     <Text ml={2}>{label}</Text>
   </Flex>
 );
+
+const RadioButton = ({label, checked, onChange, ...props}) => (
+  <Flex as="label" alignItems="center" mb={2} {...props}>
+    <input type="radio" checked={checked} onChange={onChange} />
+    <Text ml={2}>{label}</Text>
+  </Flex>
+);
+
 const Range = ({label, min, max, value, onChange, ...props}) => (
-  <Flex as="label" flexDirection="column" mb={3} {...props}>
+  <Flex as="label" flexDirection="column" mb={2} {...props}>
     <input type="range" min={min} max={max} value={value} onChange={onChange} />
     <Text>{label}</Text>
   </Flex>
@@ -67,15 +76,32 @@ body, html {
 }
 `;
 
+const generateCode = ({
+  hueOffset,
+  darkMode,
+  highContrastMode
+}) => `const colors = useColorSystem({
+  hueOffset: ${hueOffset}, // pretty random number 0-30
+  invertedLightness: ${darkMode}, // works for automatic Dark Mode
+  highContrastMode: ${highContrastMode} // good for accessibility
+});
+styledSystemTheme.colors = colors;
+`;
+
 const App = () => {
   const [hueOffset, setHueOffset] = useState(28);
   const [grayscale, setGrayscale] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [invertedLightness, setInvertedLightness] = useState(false);
   const [highContrastMode, setHighContrastMode] = useState(false);
 
-  const {colors, isSystemColorSchemeApplied} = useColorSystem({
+  const systemLight = useMedia('(prefers-color-scheme: light)');
+  const systemDark = useMedia('(prefers-color-scheme: dark)');
+  const isSystemColorSchemeApplied = systemDark || systemLight;
+
+  const colors = useColorSystem({
     hueOffset,
-    darkMode,
+    invertedLightness:
+      invertedLightness === undefined ? systemDark : invertedLightness,
     highContrastMode
   });
 
@@ -106,7 +132,7 @@ const App = () => {
           width={1}
         >
           <Box m={3} width={[1, 1 / 2, 1 / 4]}>
-            <Text as="h2" fontSize={2} mb={2}>
+            <Text as="h2" fontSize={2} mb={4}>
               Controls
             </Text>
             <Range
@@ -114,24 +140,35 @@ const App = () => {
               value={hueOffset}
               min={10}
               max={30}
+              mb={4}
               onChange={e => setHueOffset(Number(e.target.value))}
             />
             <Checkbox
               label="Grayscale"
               checked={grayscale}
+              mb={4}
               onChange={() => setGrayscale(!grayscale)}
             />
-            {isSystemColorSchemeApplied ? (
-              <Text color="gray.5" mb={2}>
-                Toggle Dark Mode in system settings
-              </Text>
-            ) : (
-              <Checkbox
-                label="Dark Mode"
-                checked={darkMode}
-                onChange={() => setDarkMode(!darkMode)}
+
+            <RadioButton
+              label="Regular lightness"
+              checked={invertedLightness === false}
+              onChange={() => setInvertedLightness(false)}
+            />
+            {isSystemColorSchemeApplied && (
+              <RadioButton
+                label="OS lightness mode"
+                checked={invertedLightness === undefined}
+                onChange={() => setInvertedLightness(undefined)}
               />
             )}
+            <RadioButton
+              label="Inverted lightness"
+              checked={invertedLightness}
+              mb={4}
+              onChange={() => setInvertedLightness(true)}
+            />
+
             <Checkbox
               label="High contrast"
               checked={highContrastMode}
@@ -158,6 +195,34 @@ const App = () => {
             </Flex>
           </Box>
         </Flex>
+        <Box>
+          <Text as="h2" fontSize={2} mb={2}>
+            Code
+          </Text>
+          <Flex flexDirection="column">
+            <Text
+              as="code"
+              mb={2}
+              fontFamily="mono"
+              fontSize={1}
+              css={css`
+                opacity: 0.5;
+              `}
+            >
+              yarn add use-color-system
+            </Text>
+            <Text as="code" mb={2} fontFamily="mono" fontSize={1}>
+              import useColorSystem from 'use-color-system'
+            </Text>
+            <Text as="pre" mt={0} fontFamily="mono" fontSize={1}>
+              {generateCode({
+                hueOffset,
+                darkMode: invertedLightness,
+                highContrastMode
+              })}
+            </Text>
+          </Flex>
+        </Box>
       </Root>
     </ThemeProvider>
   );
