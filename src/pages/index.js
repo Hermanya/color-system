@@ -76,16 +76,19 @@ body, html {
 }
 `;
 
-const generateCode = ({
-  hueOffset,
-  darkMode,
-  highContrastMode
-}) => `const colors = useColorSystem({
+const generateCode = ({hueOffset, darkMode, highContrastMode}) => `// Setup
+const colors = useColorSystem({
   hueOffset: ${hueOffset}, // pretty random number 0-30
-  invertedLightness: ${darkMode}, // works for automatic Dark Mode
-  highContrastMode: ${highContrastMode} // good for accessibility
+  invertedLightness: ${darkMode}, // enable for automagic Dark Mode
+  highContrastMode: ${highContrastMode} // eanble for a11y
 });
-styledSystemTheme.colors = colors;
+theme.colors = colors;
+
+// Usage
+<Box bg="gray.10" color="gray.0">
+  Hello
+  <Text color="red.5">World</Text>
+</Box>
 `;
 
 const App = () => {
@@ -177,13 +180,13 @@ const App = () => {
           </Box>
 
           <Box m={3}>
-            <Text as="h2" fontSize={2} mb={2}>
+            <Text as="h2" fontSize={2} mb={4}>
               Colors
             </Text>
             <ColorPrism colors={theme.colors} mb={3} />
           </Box>
           <Box m={3}>
-            <Text as="h2" fontSize={2} mb={2}>
+            <Text as="h2" fontSize={2} mb={4}>
               Demo
             </Text>
             <Flex flexWrap="wrap" m={-2}>
@@ -196,7 +199,7 @@ const App = () => {
           </Box>
         </Flex>
         <Box>
-          <Text as="h2" fontSize={2} mb={2}>
+          <Text as="h2" fontSize={2} mb={4}>
             Code
           </Text>
           <Flex flexDirection="column">
