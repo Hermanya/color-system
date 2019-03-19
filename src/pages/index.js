@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Flex, Box, Text} from 'rebass';
 import styled, {ThemeProvider, css, createGlobalStyle} from 'styled-components';
+import useMedia from 'use-media';
 import {WarningIndicator} from '../components/WarningIndicator';
 import {PrimaryIndicator} from '../components/PrimaryIndicator';
 import {RevenueIndicator} from '../components/RevenueIndicator';
@@ -9,7 +10,6 @@ import {LikeIndicator} from '../components/LikeIndicator';
 import {StatusIndicator} from '../components/StatusIndicator';
 import Seo from '../defaultcomponents/seo';
 import {useColorSystem} from '../hooks/useColorSystem';
-import useMedia from 'use-media';
 
 const ColorScale = ({colors, title, ...props}) => (
   <Flex {...props} title={title} justifyContent="flex-end" alignItems="center">
@@ -79,8 +79,8 @@ body, html {
 const generateCode = ({hueOffset, darkMode, highContrastMode}) => `// Setup
 const colors = useColorSystem({
   hueOffset: ${hueOffset}, // pretty random number 0-30
-  invertedLightness: ${darkMode}, // enable for automagic Dark Mode
-  highContrastMode: ${highContrastMode} // eanble for a11y
+  invertedLightness: ${darkMode}, // Dark Mode
+  highContrastMode: ${highContrastMode} // A11y
 });
 theme.colors = colors;
 
@@ -215,7 +215,7 @@ const App = () => {
               yarn add use-color-system
             </Text>
             <Text as="code" mb={2} fontFamily="mono" fontSize={1}>
-              import useColorSystem from 'use-color-system'
+              import {useColorSystem} from 'use-color-system'
             </Text>
             <Text as="pre" mt={0} fontFamily="mono" fontSize={1}>
               {generateCode({

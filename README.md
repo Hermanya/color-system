@@ -9,7 +9,7 @@
 
 `yarn add use-color-system`
 
-`import useColorSystem from 'use-color-system'`
+`import { useColorSystem }  from 'use-color-system'`
 
 ```jsx
 const colors = useColorSystem({

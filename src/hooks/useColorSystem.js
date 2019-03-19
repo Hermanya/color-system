@@ -32,3 +32,5 @@ export const useColorSystem = ({
     }
   );
 };
+
+export default useColorSystem;
