@@ -1,7 +1,7 @@
 {
 	"name": "use-color-system",
 	"description": "Make a color palette for styled-system",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"author": "Herman Starikov <herman.starikov@gmail.com>",
 	"main": "dist/index.js",
 	"module": "dist/index.es.js",
