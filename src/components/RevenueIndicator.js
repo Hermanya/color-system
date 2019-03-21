@@ -17,8 +17,8 @@ export const RevenueIndicator = () => (
     `}
   >
     <Box
-      bg="green.4"
-      color="gray.10"
+      bg="washed.green.7"
+      color="gray.2"
       fontSize={3}
       px={3}
       py={2}

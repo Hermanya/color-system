@@ -11,8 +11,8 @@ import {StatusIndicator} from '../components/StatusIndicator';
 import Seo from '../defaultcomponents/seo';
 import {useColorSystem} from '../hooks/useColorSystem';
 
-const ColorScale = ({colors, title, ...props}) => (
-  <Flex {...props} title={title} justifyContent="flex-end" alignItems="center">
+const ColorScale = ({colors, label, ...props}) => (
+  <Flex title={label} justifyContent="flex-end" alignItems="center" {...props}>
     <Box
       pt={3}
       css={css`
@@ -21,7 +21,7 @@ const ColorScale = ({colors, title, ...props}) => (
         // text-orientation: upright;
       `}
     >
-      {title}
+      {label}
     </Box>
     {colors.map((color, index) => {
       return <Box key={color + String(index)} bg={color} p={3} />;
@@ -29,14 +29,14 @@ const ColorScale = ({colors, title, ...props}) => (
   </Flex>
 );
 
-const ColorPrism = ({colors, ...props}) => (
+const ColorPrism = ({colors, washed, ...props}) => (
   <Flex flexDirection="row" {...props}>
     {Object.keys(colors).map(hue => (
       <ColorScale
         key={hue}
-        title={hue}
         colors={colors[hue]}
         flexDirection="column-reverse"
+        label={washed ? `washed ${hue}` : hue}
       />
     ))}
   </Flex>
@@ -67,7 +67,7 @@ const Root = styled(Box)`
   font-family: system-ui, sans-serif;
   line-height: 1.5;
   min-height: 100vh;
-  filter: ${props => (props.grayscale ? 'grayscale()' : '')};
+  filter: ${props => (props.grayscale ? 'grayscale(1)' : '')};
 `;
 
 const GlobalStyle = createGlobalStyle`
@@ -76,23 +76,42 @@ body, html {
 }
 `;
 
-const generateCode = ({hueOffset, darkMode, highContrastMode}) => `// Setup
+const generateCode = ({
+  hueOffset,
+  saturation,
+  darkMode,
+  highContrastMode
+}) => `// Setup
 const colors = useColorSystem({
   hueOffset: ${hueOffset}, // pretty random number 0-30
+  saturation: ${saturation},
   invertedLightness: ${darkMode}, // Dark Mode
   highContrastMode: ${highContrastMode} // A11y
 });
 theme.colors = colors;
 
-// Usage
-<Box bg="gray.10" color="gray.0">
+// Basic usage
+colors.washed.blue[0]
+
+// Usage with styled-system
+<Box bg="gray.9" color="washed.blue.0">
   Hello
   <Text color="red.5">World</Text>
 </Box>
 `;
 
+const Section = ({heading, children, ...props}) => (
+  <Box m={[2, 3, 3, 3, 4]} {...props}>
+    <Text as="h2" fontSize={2} mb={4}>
+      {heading}
+    </Text>
+    {children}
+  </Box>
+);
+
 const App = () => {
   const [hueOffset, setHueOffset] = useState(28);
+  const [saturation, setSaturation] = useState(85);
   const [grayscale, setGrayscale] = useState(false);
   const [invertedLightness, setInvertedLightness] = useState(false);
   const [highContrastMode, setHighContrastMode] = useState(false);
@@ -105,7 +124,8 @@ const App = () => {
     hueOffset,
     invertedLightness:
       invertedLightness === undefined ? systemDark : invertedLightness,
-    highContrastMode
+    highContrastMode,
+    saturation
   });
 
   const theme = {
@@ -122,22 +142,16 @@ const App = () => {
     colors
   };
 
+  const {washed: washedColors, gray, ...regularColors} = colors;
+
   return (
     <ThemeProvider theme={theme}>
-      <Root bg="gray.10" color="gray.0" grayscale={grayscale} p={[3, 5]}>
+      <Root bg="gray.9" color="gray.0" grayscale={grayscale} p={[3, 5]}>
         <GlobalStyle />
         <Seo title="Color scales" />
         <h1>Color system</h1>
-        <Flex
-          justifyContent="center"
-          flexDirection={['column', 'column', 'row']}
-          m={-3}
-          width={1}
-        >
-          <Box m={3} width={[1, 1 / 2, 1 / 4]}>
-            <Text as="h2" fontSize={2} mb={4}>
-              Controls
-            </Text>
+        <Flex flexWrap="wrap" m={[-1, -2, -3]} width={1}>
+          <Section heading="Controls" width={[1, 1 / 3, 1 / 4, 1 / 5]}>
             <Range
               label="Hue offset"
               value={hueOffset}
@@ -145,6 +159,14 @@ const App = () => {
               max={30}
               mb={4}
               onChange={e => setHueOffset(Number(e.target.value))}
+            />
+            <Range
+              label="Saturation"
+              value={saturation}
+              min={70}
+              max={90}
+              mb={4}
+              onChange={e => setSaturation(Number(e.target.value))}
             />
             <Checkbox
               label="Grayscale"
@@ -177,18 +199,23 @@ const App = () => {
               checked={highContrastMode}
               onChange={() => setHighContrastMode(!highContrastMode)}
             />
-          </Box>
+          </Section>
+          <Section heading="B&W">
+            <ColorScale
+              flexDirection="column-reverse"
+              label="gray"
+              colors={gray}
+              mb={3}
+            />
+          </Section>
+          <Section heading="Washed Colors">
+            <ColorPrism washed colors={washedColors} mb={3} />
+          </Section>
+          <Section heading="Normal Colors">
+            <ColorPrism colors={regularColors} mb={3} />
+          </Section>
 
-          <Box m={3}>
-            <Text as="h2" fontSize={2} mb={4}>
-              Colors
-            </Text>
-            <ColorPrism colors={theme.colors} mb={3} />
-          </Box>
-          <Box m={3}>
-            <Text as="h2" fontSize={2} mb={4}>
-              Demo
-            </Text>
+          <Section heading="Demo">
             <Flex flexWrap="wrap" m={-2}>
               <WarningIndicator />
               <PrimaryIndicator />
@@ -196,54 +223,49 @@ const App = () => {
               <LikeIndicator />
               <StatusIndicator />
             </Flex>
-          </Box>
-        </Flex>
-        <Box>
-          <Text as="h2" fontSize={2} mb={4}>
-            Code
-          </Text>
-          <Flex flexDirection="column">
-            <Text
-              as="code"
-              mb={2}
-              fontFamily="mono"
-              fontSize={1}
-              css={css`
-                opacity: 0.5;
-              `}
+          </Section>
+          <Section heading="Code">
+            <Flex flexDirection="column">
+              <Text
+                as="code"
+                mb={2}
+                fontFamily="mono"
+                fontSize={1}
+                css={css`
+                  opacity: 0.5;
+                `}
+              >
+                yarn add use-color-system
+              </Text>
+              <Text as="code" mb={2} fontFamily="mono" fontSize={1}>
+                {`import {useColorSystem} from 'use-color-system'`}
+              </Text>
+              <Text as="pre" mt={0} fontFamily="mono" fontSize={1}>
+                {generateCode({
+                  hueOffset,
+                  saturation,
+                  darkMode: invertedLightness,
+                  highContrastMode
+                })}
+              </Text>
+            </Flex>
+          </Section>
+          <Section heading="Links">
+            <Link
+              mr={2}
+              href="https://codesandbox.io/s/github/Hermanya/color-system/tree/master/example"
             >
-              yarn add use-color-system
-            </Text>
-            <Text as="code" mb={2} fontFamily="mono" fontSize={1}>
-              import {useColorSystem} from 'use-color-system'
-            </Text>
-            <Text as="pre" mt={0} fontFamily="mono" fontSize={1}>
-              {generateCode({
-                hueOffset,
-                darkMode: invertedLightness,
-                highContrastMode
-              })}
-            </Text>
-          </Flex>
-        </Box>
-        <Box>
-          <Text as="h2" fontSize={2} mb={4}>
-            Links
-          </Text>
-          <Link
-            mr={2}
-            href="https://codesandbox.io/s/github/Hermanya/color-system/tree/master/example"
-          >
-            CodeSandbox
-          </Link>
-          <Link mr={2} href="https://www.npmjs.com/package/use-color-system">
-            NPM
-          </Link>
-          <Link mr={2} href="https://github.com/Hermanya/color-system">
-            GitHub
-          </Link>
-          <Link href="https://hermanya.github.io">Herman Starikov</Link>
-        </Box>
+              CodeSandbox
+            </Link>
+            <Link mr={2} href="https://www.npmjs.com/package/use-color-system">
+              NPM
+            </Link>
+            <Link mr={2} href="https://github.com/Hermanya/color-system">
+              GitHub
+            </Link>
+            <Link href="https://hermanya.github.io">Herman Starikov</Link>
+          </Section>
+        </Flex>
       </Root>
     </ThemeProvider>
   );

@@ -7,7 +7,7 @@ import {Indicator} from './Indicator';
 export const LikeIndicator = () => (
   <Indicator title="SOCIAL">
     <Flex alignItems="center" mb={2}>
-      <Box color="fuschia.8">
+      <Box color="washed.fuschia.6">
         <Heart size="2em" fill="currentColor" />
       </Box>
       <Box ml="0.5em">

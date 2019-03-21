@@ -23,7 +23,7 @@ styledSystemTheme.colors = colors;
 ```
 
 ```jsx
-<Box bg="gray.10" color="gray.0">
+<Box bg="gray.9" color="gray.0">
   Hello
   <Text color="red.5">World</Text>
 </Box>

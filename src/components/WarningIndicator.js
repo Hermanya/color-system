@@ -9,7 +9,7 @@ export const WarningIndicator = () => (
   <Indicator
     title="WARNING"
     titleProps={{textAlign: 'center'}}
-    bg="yellow.9"
+    bg="yellow.7"
     color="gray.0"
     css={css`
       position: relative;

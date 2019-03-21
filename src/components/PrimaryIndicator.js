@@ -4,12 +4,12 @@ import {Indicator} from './Indicator';
 
 export const PrimaryIndicator = () => (
   <Indicator
-    bg="indigo.3"
-    color="gray.10"
+    bg="blue.5"
+    color="gray.9"
     title="RIGHT NOW"
     titleProps={{
       textAlign: 'center',
-      color: 'indigo.10'
+      color: 'indigo.9'
     }}
   >
     <Text fontFamily="mono" fontSize={6} textAlign="center">
