@@ -1,6 +1,7 @@
 <p align="center">
   <a href="https://hermanya.github.io/color-system/">
-    <img alt="Default Color scheme" src="https://hermanya.github.io/color-system/icons/icon-192x192.png" width="192" />
+    <img width="289" alt="image" src="https://user-images.githubusercontent.com/2906365/58375176-34e86200-7f1b-11e9-9fc4-1b3bd66adb80.png">
+
   </a>
 </p>
 <h1 align="center">
