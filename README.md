@@ -29,3 +29,12 @@ styledSystemTheme.colors = colors;
   <Text color="red.5">World</Text>
 </Box>
 ```
+
+*Depending on `colors` may defer*: usually it's `gray` `magenta` `red`
+`orange`
+`lime`
+`green`
+`teal`
+`cyan`
+`blue`
+`purple`
